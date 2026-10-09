@@ -1,1 +1,75 @@
 
+services:
+  - type: web
+    name: silentinterview-hackathon-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./back-end/Dockerfile
+    dockerContext: ./back-end
+    healthCheckPath: /health/ready
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: Jwt__Issuer
+        value: SilentInterview
+      - key: Jwt__Audience
+        value: SilentInterviewUsers
+      - key: Auth__RefreshCookieSecure
+        value: "true"
+      - key: Auth__RefreshCookieSameSite
+        value: Lax
+      - key: Jwt__Key
+        generateValue: true
+      - key: PGHOST
+        fromDatabase:
+          name: silentinterview-hackathon-db
+          property: host
+      - key: PGPORT
+        fromDatabase:
+          name: silentinterview-hackathon-db
+          property: port
+      - key: PGDATABASE
+        fromDatabase:
+          name: silentinterview-hackathon-db
+          property: database
+      - key: PGUSER
+        fromDatabase:
+          name: silentinterview-hackathon-db
+          property: user
+      - key: PGPASSWORD
+        fromDatabase:
+          name: silentinterview-hackathon-db
+          property: password
+      - key: FRONTEND_ORIGIN
+        value: https://silentinterview-hackathon-frontend.onrender.com
+      - key: Frontend__BaseUrl
+        value: https://silentinterview-hackathon-frontend.onrender.com
+      - key: GROQ_API_KEY
+        sync: false
+
+  - type: web
+    name: silentinterview-hackathon-frontend
+    runtime: static
+    plan: free
+    region: frankfurt
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://silentinterview-hackathon-api.onrender.com/api/v1
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: silentinterview-hackathon-db
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: "17"
+    databaseName: SilentInterview_DB
+    user: silentinterview_user
