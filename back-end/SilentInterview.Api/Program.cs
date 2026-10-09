@@ -218,6 +218,29 @@ builder.Host.UseSerilog((context, configuration) =>
 //
 
 builder.Services.AddControllers();
+builder.Services.Configure<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var validationErrors = context.ModelState
+            .Where(entry => entry.Value?.Errors.Count > 0)
+            .SelectMany(entry => entry.Value!.Errors.Select(error =>
+                string.IsNullOrWhiteSpace(error.ErrorMessage)
+                    ? $"The field {entry.Key} is invalid."
+                    : error.ErrorMessage))
+            .Distinct()
+            .ToArray();
+
+        return new Microsoft.AspNetCore.Mvc.BadRequestObjectResult(new
+        {
+            success = false,
+            message = validationErrors.Length > 0
+                ? string.Join(" ", validationErrors)
+                : "The submitted information is invalid.",
+            errors = validationErrors
+        });
+    };
+});
 builder.Services.AddHealthChecks();
 
 //

@@ -59,7 +59,7 @@ public class AuthController : BaseApiController
         if (!result)
         {
             return Failure(
-                "Email already exists.",
+                "Unable to create the account. This email may already be registered, or the account details are invalid.",
                 StatusCodes.Status400BadRequest);
         }
 

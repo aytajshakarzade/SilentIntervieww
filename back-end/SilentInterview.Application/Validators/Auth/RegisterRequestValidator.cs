@@ -10,7 +10,7 @@ public class RegisterRequestValidator
     {
         RuleFor(x => x.FullName)
             .NotEmpty()
-            .MinimumLength(3)
+            .MinimumLength(2)
             .MaximumLength(100);
 
         RuleFor(x => x.Email)
@@ -18,14 +18,12 @@ public class RegisterRequestValidator
             .EmailAddress();
 
         RuleFor(x => x.Password)
-            .NotEmpty()
-            .MinimumLength(8)
-            .Matches("[A-Z]")
-            .WithMessage("Password must contain an uppercase letter.")
-            .Matches("[a-z]")
-            .WithMessage("Password must contain a lowercase letter.")
-            .Matches("[0-9]")
-            .WithMessage("Password must contain a number.");
+            .NotEmpty().WithMessage("Password is required.")
+            .MinimumLength(8).WithMessage("Password must be at least 8 characters long.")
+            .Matches("[A-Z]").WithMessage("Password must contain an uppercase letter.")
+            .Matches("[a-z]").WithMessage("Password must contain a lowercase letter.")
+            .Matches("[0-9]").WithMessage("Password must contain a number.")
+            .Matches("[^A-Za-z0-9]").WithMessage("Password must contain a special character.");
 
         RuleFor(x => x.ConfirmPassword)
             .Equal(x => x.Password)
