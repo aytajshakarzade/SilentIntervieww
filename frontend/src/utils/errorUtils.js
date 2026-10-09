@@ -12,23 +12,11 @@ export function getErrorMessage(err, locale) {
   const response   = axiosError?.response?.data;
   const status     = axiosError?.response?.status;
 
-  // ASP.NET endpoints can return camelCase ApiResponse, PascalCase middleware
-  // responses, or ProblemDetails with an errors dictionary. Prefer field-level
-  // validation messages so HTTP 400 does not collapse to a generic message.
-  const validationErrors = response?.errors ?? response?.Errors;
-  if (validationErrors && typeof validationErrors === 'object') {
-    const messages = Object.values(validationErrors).flat().filter(value => typeof value === 'string' && value.trim());
-    if (messages.length) return messages.join('\n');
-  }
-  const responseMessage = response?.message ?? response?.Message ?? response?.detail ?? response?.Detail;
-  if (typeof responseMessage === 'string' && responseMessage.trim() && !['One or more validation errors occurred.', 'AI_PROVIDER_AUTH_FAILED', 'AI_PROVIDER_UNAVAILABLE', 'AI_NOT_CONFIGURED'].includes(responseMessage)) {
-    return responseMessage;
-  }
 
-  if (response?.message === 'AI_PROVIDER_AUTH_FAILED' || response?.Message === 'AI_PROVIDER_AUTH_FAILED') {
+  if (response?.message === 'AI_PROVIDER_AUTH_FAILED') {
     return _aiProviderAuthMsg(locale);
   }
-  if (response?.message === 'AI_PROVIDER_UNAVAILABLE' || response?.Message === 'AI_PROVIDER_UNAVAILABLE') {
+  if (response?.message === 'AI_PROVIDER_UNAVAILABLE') {
     return _aiProviderUnavailableMsg(locale);
   }
   // ── AI not configured ──────────────────────────────────────────────────────
@@ -38,7 +26,6 @@ export function getErrorMessage(err, locale) {
   // response) should produce the AI configuration message.
   if (
     response?.message === 'AI_NOT_CONFIGURED' ||
-    response?.Message === 'AI_NOT_CONFIGURED' ||
     response?.data    === 'AI_NOT_CONFIGURED' ||
     (typeof response === 'string' && response === 'AI_NOT_CONFIGURED')
   ) {

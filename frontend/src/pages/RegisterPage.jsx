@@ -44,23 +44,16 @@ const COPY = {
 
 function calcStrength(pwd, t) {
   if (!pwd) return { score: 0, label: '', color: '' };
-  let score = 0;
-  if (pwd.length >= 8) score++;
-  if (pwd.length >= 12) score++;
-  if (/[A-Z]/.test(pwd)) score++;
-  if (/[a-z]/.test(pwd)) score++;
-  if (/[0-9]/.test(pwd)) score++;
-  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  let score = 0; if (pwd.length >= 8) score++; if (pwd.length >= 12) score++; if (/[A-Z]/.test(pwd)) score++; if (/[0-9]/.test(pwd)) score++; if (/[^A-Za-z0-9]/.test(pwd)) score++;
   if (score <= 1) return { score: 20, label: t('registerPage.strengthWeak'), color: 'error' };
   if (score === 2) return { score: 40, label: t('registerPage.strengthFair'), color: 'warning' };
-  if (score <= 4) return { score: 60, label: t('registerPage.strengthGood'), color: 'info' };
-  if (score === 5) return { score: 80, label: t('registerPage.strengthStrong'), color: 'success' };
+  if (score === 3) return { score: 60, label: t('registerPage.strengthGood'), color: 'info' };
+  if (score === 4) return { score: 80, label: t('registerPage.strengthStrong'), color: 'success' };
   return { score: 100, label: t('registerPage.strengthExcellent'), color: 'success' };
 }
 function getRequirements(t) { return [
   { label: t('registerPage.req8Chars'), test: p => p.length >= 8 },
   { label: t('registerPage.reqUppercase'), test: p => /[A-Z]/.test(p) },
-  { label: t('registerPage.reqLowercase'), test: p => /[a-z]/.test(p) },
   { label: t('registerPage.reqNumber'), test: p => /[0-9]/.test(p) },
   { label: t('registerPage.reqSpecialChar'), test: p => /[^A-Za-z0-9]/.test(p) },
 ]; }
@@ -121,7 +114,7 @@ export default function RegisterPage() {
         <Box sx={{pt:.2}}><Typography variant="caption" color="text.secondary">{copy.custom}</Typography><TextField fullWidth size="small" value={customCompany} onChange={e=>{setCustomCompany(e.target.value);setCompany(null)}} placeholder={copy.customPlaceholder} sx={{mt:.6}}/></Box>
         {company&&<Chip size="small" icon={<CheckCircleIcon/>} label={`${company.name} — ${copy.selected}`} color="success" variant="outlined" sx={{width:'fit-content'}}/>}
       </Stack></Box>}
-      <Box><PremiumInput label={t('registerPage.password')} type={showPassword?'text':'password'} fullWidth autoComplete="new-password" error={Boolean(errors.password)} helperText={errors.password?.message} icon={<LockIcon fontSize="small"/>} InputProps={{endAdornment:<InputAdornment position="end"><IconButton size="small" onClick={()=>setShowPassword(s=>!s)}>{showPassword?<VisibilityOffIcon fontSize="small"/>:<VisibilityIcon fontSize="small"/>}</IconButton></InputAdornment>}} {...register('password',{required:t('registerPage.passwordRequired'),minLength:{value:8,message:t('registerPage.passwordMinLength')},validate:{uppercase:v=>/[A-Z]/.test(v)||t('registerPage.reqUppercase'),lowercase:v=>/[a-z]/.test(v)||t('registerPage.reqLowercase'),number:v=>/[0-9]/.test(v)||t('registerPage.reqNumber'),specialChar:v=>/[^A-Za-z0-9]/.test(v)||t('registerPage.reqSpecialChar')}})}/>{password&&<Box sx={{mt:1}}><Box sx={{display:'flex',justifyContent:'space-between',mb:.5}}><Typography variant="caption" color="text.secondary">{t('registerPage.passwordStrength')}</Typography><Typography variant="caption" color={`${strength.color}.main`} fontWeight={700}>{strength.label}</Typography></Box><LinearProgress variant="determinate" value={strength.score} color={strength.color||'primary'} sx={{height:6,borderRadius:3}}/><Box sx={{mt:1,display:'grid',gridTemplateColumns:'1fr 1fr',gap:.4}}>{requirements.map(r=><Box key={r.label} sx={{display:'flex',alignItems:'center',gap:.4}}>{r.test(password)?<CheckCircleIcon sx={{fontSize:12,color:'success.main'}}/>:<RadioButtonUncheckedIcon sx={{fontSize:12,color:'text.disabled'}}/>}<Typography variant="caption" color={r.test(password)?'success.main':'text.disabled'} sx={{fontSize:'.66rem'}}>{r.label}</Typography></Box>)}</Box></Box>}</Box>
+      <Box><PremiumInput label={t('registerPage.password')} type={showPassword?'text':'password'} fullWidth autoComplete="new-password" error={Boolean(errors.password)} helperText={errors.password?.message} icon={<LockIcon fontSize="small"/>} InputProps={{endAdornment:<InputAdornment position="end"><IconButton size="small" onClick={()=>setShowPassword(s=>!s)}>{showPassword?<VisibilityOffIcon fontSize="small"/>:<VisibilityIcon fontSize="small"/>}</IconButton></InputAdornment>}} {...register('password',{required:t('registerPage.passwordRequired'),minLength:{value:8,message:t('registerPage.passwordMinLength')}})}/>{password&&<Box sx={{mt:1}}><Box sx={{display:'flex',justifyContent:'space-between',mb:.5}}><Typography variant="caption" color="text.secondary">{t('registerPage.passwordStrength')}</Typography><Typography variant="caption" color={`${strength.color}.main`} fontWeight={700}>{strength.label}</Typography></Box><LinearProgress variant="determinate" value={strength.score} color={strength.color||'primary'} sx={{height:6,borderRadius:3}}/><Box sx={{mt:1,display:'grid',gridTemplateColumns:'1fr 1fr',gap:.4}}>{requirements.map(r=><Box key={r.label} sx={{display:'flex',alignItems:'center',gap:.4}}>{r.test(password)?<CheckCircleIcon sx={{fontSize:12,color:'success.main'}}/>:<RadioButtonUncheckedIcon sx={{fontSize:12,color:'text.disabled'}}/>}<Typography variant="caption" color={r.test(password)?'success.main':'text.disabled'} sx={{fontSize:'.66rem'}}>{r.label}</Typography></Box>)}</Box></Box>}</Box>
       <PremiumInput label={t('registerPage.confirmPassword')} type={showConfirm?'text':'password'} fullWidth autoComplete="new-password" error={Boolean(errors.confirmPassword)} helperText={errors.confirmPassword?.message} icon={<LockIcon fontSize="small"/>} InputProps={{endAdornment:<InputAdornment position="end"><IconButton size="small" onClick={()=>setShowConfirm(s=>!s)}>{showConfirm?<VisibilityOffIcon fontSize="small"/>:<VisibilityIcon fontSize="small"/>}</IconButton></InputAdornment>}} {...register('confirmPassword',{required:t('registerPage.confirmPasswordRequired'),validate:value=>value===password||t('registerPage.passwordsNotMatch')})}/>
       <PremiumButton type="submit" fullWidth variant="contained" disabled={loading}>{loading?<CircularProgress size={20} color="inherit"/>:t('registerPage.createAccount')}</PremiumButton>
     </Stack></Box></PremiumCard>

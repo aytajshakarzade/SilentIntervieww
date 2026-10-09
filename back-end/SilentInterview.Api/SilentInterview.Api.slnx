@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../SilentInterview.Application/SilentInterview.Application.csproj" />
+  <Project Path="../SilentInterview.Domain/SilentInterview.Domain.csproj" />
+  <Project Path="../SilentInterview.Infrastructure/SilentInterview.Infrastructure.csproj" />
+  <Project Path="SilentInterview.Api.csproj" />
+</Solution>

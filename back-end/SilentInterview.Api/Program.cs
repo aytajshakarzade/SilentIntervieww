@@ -55,46 +55,13 @@ if (File.Exists(environmentFile))
 // ======================================================
 //
 
-// Render exposes its managed PostgreSQL credentials as PG* environment variables.
-// appsettings.json contains a local-development fallback (Host=localhost), so
-// explicitly build the production connection string from PG* when PGHOST exists.
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection");
-
-var pgHost = builder.Configuration["PGHOST"]?.Trim();
-if (!string.IsNullOrWhiteSpace(pgHost))
-{
-    var pgDatabase = builder.Configuration["PGDATABASE"]?.Trim();
-    var pgUser = builder.Configuration["PGUSER"]?.Trim();
-    var pgPassword = builder.Configuration["PGPASSWORD"];
-    var pgPortValue = builder.Configuration["PGPORT"];
-
-    if (string.IsNullOrWhiteSpace(pgDatabase) ||
-        string.IsNullOrWhiteSpace(pgUser) ||
-        string.IsNullOrWhiteSpace(pgPassword))
-    {
-        throw new InvalidOperationException(
-            "PGHOST is set, but one or more required PostgreSQL variables are missing: PGDATABASE, PGUSER, PGPASSWORD."
-        );
-    }
-
-    var pgPort = int.TryParse(pgPortValue, out var parsedPort) ? parsedPort : 5432;
-    var postgresBuilder = new Npgsql.NpgsqlConnectionStringBuilder
-    {
-        Host = pgHost,
-        Port = pgPort,
-        Database = pgDatabase,
-        Username = pgUser,
-        Password = pgPassword
-    };
-    connectionString = postgresBuilder.ConnectionString;
-    builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
-}
 
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException(
-        "Configure ConnectionStrings:DefaultConnection or the PGHOST, PGDATABASE, PGUSER and PGPASSWORD environment variables for PostgreSQL."
+        "ConnectionStrings:DefaultConnection must be configured for the PostgreSQL database."
     );
 }
 

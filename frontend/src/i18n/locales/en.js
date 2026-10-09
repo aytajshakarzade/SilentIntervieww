@@ -809,7 +809,6 @@ export default {
     strengthExcellent: 'Excellent',
     req8Chars: 'At least 8 characters',
     reqUppercase: 'One uppercase letter',
-    reqLowercase: 'One lowercase letter',
     reqNumber: 'One number',
     reqSpecialChar: 'One special character',
     confirmPassword: 'Confirm password',

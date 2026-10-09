@@ -815,7 +815,6 @@ export default {
     strengthExcellent: 'Əla',
     req8Chars: 'Ən azı 8 simvol',
     reqUppercase: 'Bir böyük hərf',
-    reqLowercase: 'Bir kiçik hərf',
     reqNumber: 'Bir rəqəm',
     reqSpecialChar: 'Bir xüsusi simvol',
     confirmPassword: 'Şifrəni təsdiq edin',

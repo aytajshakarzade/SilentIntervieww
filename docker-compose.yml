@@ -1,0 +1,45 @@
+services:
+  api:
+    build:
+      context: ./back-end
+      dockerfile: Dockerfile
+    image: silentinterview-api
+    container_name: silentinterview-api
+    restart: unless-stopped
+    env_file:
+      - ./back-end/.env
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      Jwt__Issuer: "SilentInterview"
+      Jwt__Audience: "SilentInterviewUsers"
+      # Explicitly map the existing .env JWT secret into the .NET configuration key.
+      # The .env file itself is not modified.
+      Jwt__Key: "${JWT_KEY}"
+    ports:
+      - "5000:8080"
+    volumes:
+      - silentinterview_api_uploads:/app/wwwroot/uploads
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS --max-time 5 http://127.0.0.1:8080/health/live >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 8s
+      retries: 12
+      start_period: 20s
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: "${VITE_API_BASE_URL:-http://localhost:5000/api/v1}"
+    image: silentinterview-frontend
+    container_name: silentinterview-frontend
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:80"
+volumes:
+  silentinterview_api_uploads:
+    name: silentinterview_api_uploads
