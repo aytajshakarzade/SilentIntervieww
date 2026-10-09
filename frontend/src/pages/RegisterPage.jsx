@@ -44,16 +44,18 @@ const COPY = {
 
 function calcStrength(pwd, t) {
   if (!pwd) return { score: 0, label: '', color: '' };
-  let score = 0; if (pwd.length >= 8) score++; if (pwd.length >= 12) score++; if (/[A-Z]/.test(pwd)) score++; if (/[0-9]/.test(pwd)) score++; if (/[^A-Za-z0-9]/.test(pwd)) score++;
+  let score = 0; if (pwd.length >= 8) score++; if (pwd.length >= 12) score++; if (/[A-Z]/.test(pwd)) score++; if (/[a-z]/.test(pwd)) score++; if (/[0-9]/.test(pwd)) score++; if (/[^A-Za-z0-9]/.test(pwd)) score++;
   if (score <= 1) return { score: 20, label: t('registerPage.strengthWeak'), color: 'error' };
-  if (score === 2) return { score: 40, label: t('registerPage.strengthFair'), color: 'warning' };
-  if (score === 3) return { score: 60, label: t('registerPage.strengthGood'), color: 'info' };
-  if (score === 4) return { score: 80, label: t('registerPage.strengthStrong'), color: 'success' };
+  if (score === 2) return { score: 33, label: t('registerPage.strengthFair'), color: 'warning' };
+  if (score === 3) return { score: 50, label: t('registerPage.strengthGood'), color: 'info' };
+  if (score === 4) return { score: 67, label: t('registerPage.strengthStrong'), color: 'success' };
+  if (score === 5) return { score: 83, label: t('registerPage.strengthStrong'), color: 'success' };
   return { score: 100, label: t('registerPage.strengthExcellent'), color: 'success' };
 }
 function getRequirements(t) { return [
   { label: t('registerPage.req8Chars'), test: p => p.length >= 8 },
   { label: t('registerPage.reqUppercase'), test: p => /[A-Z]/.test(p) },
+  { label: t('registerPage.reqLowercase'), test: p => /[a-z]/.test(p) },
   { label: t('registerPage.reqNumber'), test: p => /[0-9]/.test(p) },
   { label: t('registerPage.reqSpecialChar'), test: p => /[^A-Za-z0-9]/.test(p) },
 ]; }

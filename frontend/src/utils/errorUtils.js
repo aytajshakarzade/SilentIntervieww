@@ -47,6 +47,8 @@ export function getErrorMessage(err, locale) {
 
   // ── Backend user-friendly message ─────────────────────────────────────────
   if (response?.message) return response.message;
+  if (response?.detail) return response.detail;
+  if (response?.title && response.title !== 'One or more validation errors occurred.') return response.title;
 
   // ── Validation errors ──────────────────────────────────────────────────────
   if (response?.errors) {

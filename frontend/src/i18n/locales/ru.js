@@ -807,6 +807,7 @@ export default {
     strengthExcellent: 'Отличный',
     req8Chars: 'Минимум 8 символов',
     reqUppercase: 'Одна заглавная буква',
+    reqLowercase: 'Одна строчная буква',
     reqNumber: 'Одна цифра',
     reqSpecialChar: 'Один специальный символ',
     confirmPassword: 'Подтвердите пароль',

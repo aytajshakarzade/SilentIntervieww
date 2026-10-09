@@ -58,12 +58,43 @@ if (File.Exists(environmentFile))
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection");
 
+// Render provides database connection details as PGHOST/PGPORT/PGDATABASE/
+// PGUSER/PGPASSWORD. appsettings.json contains localhost defaults for local
+// development, so explicitly build the production connection string when the
+// Render PostgreSQL variables are present.
+var pgHost = builder.Configuration["PGHOST"];
+var pgDatabase = builder.Configuration["PGDATABASE"];
+var pgUser = builder.Configuration["PGUSER"];
+var pgPassword = builder.Configuration["PGPASSWORD"];
+var pgPort = builder.Configuration["PGPORT"];
+
+if (!string.IsNullOrWhiteSpace(pgHost) &&
+    !string.IsNullOrWhiteSpace(pgDatabase) &&
+    !string.IsNullOrWhiteSpace(pgUser) &&
+    !string.IsNullOrWhiteSpace(pgPassword))
+{
+    var port = int.TryParse(pgPort, out var parsedPort) ? parsedPort : 5432;
+    var postgresBuilder = new Npgsql.NpgsqlConnectionStringBuilder
+    {
+        Host = pgHost,
+        Port = port,
+        Database = pgDatabase,
+        Username = pgUser,
+        Password = pgPassword,
+        SslMode = Npgsql.SslMode.Require,
+        TrustServerCertificate = true
+    };
+    connectionString = postgresBuilder.ConnectionString;
+}
+
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException(
         "ConnectionStrings:DefaultConnection must be configured for the PostgreSQL database."
     );
 }
+
+builder.Configuration["ConnectionStrings:DefaultConnection"] = connectionString;
 
 //
 // ======================================================
