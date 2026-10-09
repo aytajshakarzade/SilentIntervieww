@@ -53,8 +53,7 @@ services:
   - type: web
     name: silentinterview-hackathon-frontend
     runtime: static
-    plan: free
-    region: frankfurt
+    name: silentinterview-hackathon-frontend
     rootDir: frontend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
@@ -71,5 +70,5 @@ databases:
     plan: free
     region: frankfurt
     postgresMajorVersion: "17"
-databaseName: silentinterview_db
-user: silentinterview_user
+    databaseName: silentinterview_db
+    user: silentinterview_user
