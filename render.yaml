@@ -71,5 +71,5 @@ databases:
     plan: free
     region: frankfurt
     postgresMajorVersion: "17"
-    databaseName: SilentInterview_DB
-    user: silentinterview_user
+databaseName: silentinterview_db
+user: silentinterview_user
