@@ -1,0 +1,134 @@
+--- a/frontend/src/pages/RegisterPage.jsx
++++ b/frontend/src/pages/RegisterPage.jsx
+@@ -44,16 +44,23 @@
+ 
+ function calcStrength(pwd, t) {
+   if (!pwd) return { score: 0, label: '', color: '' };
+-  let score = 0; if (pwd.length >= 8) score++; if (pwd.length >= 12) score++; if (/[A-Z]/.test(pwd)) score++; if (/[0-9]/.test(pwd)) score++; if (/[^A-Za-z0-9]/.test(pwd)) score++;
++  let score = 0;
++  if (pwd.length >= 8) score++;
++  if (pwd.length >= 12) score++;
++  if (/[A-Z]/.test(pwd)) score++;
++  if (/[a-z]/.test(pwd)) score++;
++  if (/[0-9]/.test(pwd)) score++;
++  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+   if (score <= 1) return { score: 20, label: t('registerPage.strengthWeak'), color: 'error' };
+   if (score === 2) return { score: 40, label: t('registerPage.strengthFair'), color: 'warning' };
+-  if (score === 3) return { score: 60, label: t('registerPage.strengthGood'), color: 'info' };
+-  if (score === 4) return { score: 80, label: t('registerPage.strengthStrong'), color: 'success' };
++  if (score <= 4) return { score: 60, label: t('registerPage.strengthGood'), color: 'info' };
++  if (score === 5) return { score: 80, label: t('registerPage.strengthStrong'), color: 'success' };
+   return { score: 100, label: t('registerPage.strengthExcellent'), color: 'success' };
+ }
+ function getRequirements(t) { return [
+   { label: t('registerPage.req8Chars'), test: p => p.length >= 8 },
+   { label: t('registerPage.reqUppercase'), test: p => /[A-Z]/.test(p) },
++  { label: t('registerPage.reqLowercase'), test: p => /[a-z]/.test(p) },
+   { label: t('registerPage.reqNumber'), test: p => /[0-9]/.test(p) },
+   { label: t('registerPage.reqSpecialChar'), test: p => /[^A-Za-z0-9]/.test(p) },
+ ]; }
+@@ -114,7 +121,7 @@
+         <Box sx={{pt:.2}}><Typography variant="caption" color="text.secondary">{copy.custom}</Typography><TextField fullWidth size="small" value={customCompany} onChange={e=>{setCustomCompany(e.target.value);setCompany(null)}} placeholder={copy.customPlaceholder} sx={{mt:.6}}/></Box>
+         {company&&<Chip size="small" icon={<CheckCircleIcon/>} label={`${company.name} — ${copy.selected}`} color="success" variant="outlined" sx={{width:'fit-content'}}/>}
+       </Stack></Box>}
+-      <Box><PremiumInput label={t('registerPage.password')} type={showPassword?'text':'password'} fullWidth autoComplete="new-password" error={Boolean(errors.password)} helperText={errors.password?.message} icon={<LockIcon fontSize="small"/>} InputProps={{endAdornment:<InputAdornment position="end"><IconButton size="small" onClick={()=>setShowPassword(s=>!s)}>{showPassword?<VisibilityOffIcon fontSize="small"/>:<VisibilityIcon fontSize="small"/>}</IconButton></InputAdornment>}} {...register('password',{required:t('registerPage.passwordRequired'),minLength:{value:8,message:t('registerPage.passwordMinLength')}})}/>{password&&<Box sx={{mt:1}}><Box sx={{display:'flex',justifyContent:'space-between',mb:.5}}><Typography variant="caption" color="text.secondary">{t('registerPage.passwordStrength')}</Typography><Typography variant="caption" color={`${strength.color}.main`} fontWeight={700}>{strength.label}</Typography></Box><LinearProgress variant="determinate" value={strength.score} color={strength.color||'primary'} sx={{height:6,borderRadius:3}}/><Box sx={{mt:1,display:'grid',gridTemplateColumns:'1fr 1fr',gap:.4}}>{requirements.map(r=><Box key={r.label} sx={{display:'flex',alignItems:'center',gap:.4}}>{r.test(password)?<CheckCircleIcon sx={{fontSize:12,color:'success.main'}}/>:<RadioButtonUncheckedIcon sx={{fontSize:12,color:'text.disabled'}}/>}<Typography variant="caption" color={r.test(password)?'success.main':'text.disabled'} sx={{fontSize:'.66rem'}}>{r.label}</Typography></Box>)}</Box></Box>}</Box>
++      <Box><PremiumInput label={t('registerPage.password')} type={showPassword?'text':'password'} fullWidth autoComplete="new-password" error={Boolean(errors.password)} helperText={errors.password?.message} icon={<LockIcon fontSize="small"/>} InputProps={{endAdornment:<InputAdornment position="end"><IconButton size="small" onClick={()=>setShowPassword(s=>!s)}>{showPassword?<VisibilityOffIcon fontSize="small"/>:<VisibilityIcon fontSize="small"/>}</IconButton></InputAdornment>}} {...register('password',{required:t('registerPage.passwordRequired'),minLength:{value:8,message:t('registerPage.passwordMinLength')},validate:{uppercase:v=>/[A-Z]/.test(v)||t('registerPage.reqUppercase'),lowercase:v=>/[a-z]/.test(v)||t('registerPage.reqLowercase'),number:v=>/[0-9]/.test(v)||t('registerPage.reqNumber'),specialChar:v=>/[^A-Za-z0-9]/.test(v)||t('registerPage.reqSpecialChar')}})}/>{password&&<Box sx={{mt:1}}><Box sx={{display:'flex',justifyContent:'space-between',mb:.5}}><Typography variant="caption" color="text.secondary">{t('registerPage.passwordStrength')}</Typography><Typography variant="caption" color={`${strength.color}.main`} fontWeight={700}>{strength.label}</Typography></Box><LinearProgress variant="determinate" value={strength.score} color={strength.color||'primary'} sx={{height:6,borderRadius:3}}/><Box sx={{mt:1,display:'grid',gridTemplateColumns:'1fr 1fr',gap:.4}}>{requirements.map(r=><Box key={r.label} sx={{display:'flex',alignItems:'center',gap:.4}}>{r.test(password)?<CheckCircleIcon sx={{fontSize:12,color:'success.main'}}/>:<RadioButtonUncheckedIcon sx={{fontSize:12,color:'text.disabled'}}/>}<Typography variant="caption" color={r.test(password)?'success.main':'text.disabled'} sx={{fontSize:'.66rem'}}>{r.label}</Typography></Box>)}</Box></Box>}</Box>
+       <PremiumInput label={t('registerPage.confirmPassword')} type={showConfirm?'text':'password'} fullWidth autoComplete="new-password" error={Boolean(errors.confirmPassword)} helperText={errors.confirmPassword?.message} icon={<LockIcon fontSize="small"/>} InputProps={{endAdornment:<InputAdornment position="end"><IconButton size="small" onClick={()=>setShowConfirm(s=>!s)}>{showConfirm?<VisibilityOffIcon fontSize="small"/>:<VisibilityIcon fontSize="small"/>}</IconButton></InputAdornment>}} {...register('confirmPassword',{required:t('registerPage.confirmPasswordRequired'),validate:value=>value===password||t('registerPage.passwordsNotMatch')})}/>
+       <PremiumButton type="submit" fullWidth variant="contained" disabled={loading}>{loading?<CircularProgress size={20} color="inherit"/>:t('registerPage.createAccount')}</PremiumButton>
+     </Stack></Box></PremiumCard>
+--- a/frontend/src/i18n/locales/az.js
++++ b/frontend/src/i18n/locales/az.js
+@@ -815,6 +815,7 @@
+     strengthExcellent: 'Əla',
+     req8Chars: 'Ən azı 8 simvol',
+     reqUppercase: 'Bir böyük hərf',
++    reqLowercase: 'Bir kiçik hərf',
+     reqNumber: 'Bir rəqəm',
+     reqSpecialChar: 'Bir xüsusi simvol',
+     confirmPassword: 'Şifrəni təsdiq edin',
+--- a/frontend/src/i18n/locales/en.js
++++ b/frontend/src/i18n/locales/en.js
+@@ -809,6 +809,7 @@
+     strengthExcellent: 'Excellent',
+     req8Chars: 'At least 8 characters',
+     reqUppercase: 'One uppercase letter',
++    reqLowercase: 'One lowercase letter',
+     reqNumber: 'One number',
+     reqSpecialChar: 'One special character',
+     confirmPassword: 'Confirm password',
+--- a/frontend/src/i18n/locales/ru.js
++++ b/frontend/src/i18n/locales/ru.js
+@@ -807,6 +807,7 @@
+     strengthExcellent: 'Отличный',
+     req8Chars: 'Минимум 8 символов',
+     reqUppercase: 'Одна заглавная буква',
++    reqLowercase: 'Одна строчная буква',
+     reqNumber: 'Одна цифра',
+     reqSpecialChar: 'Один специальный символ',
+     confirmPassword: 'Подтвердите пароль',
+--- a/frontend/src/utils/errorUtils.js
++++ b/frontend/src/utils/errorUtils.js
+@@ -12,11 +12,23 @@
+   const response   = axiosError?.response?.data;
+   const status     = axiosError?.response?.status;
+ 
++  // ASP.NET endpoints can return camelCase ApiResponse, PascalCase middleware
++  // responses, or ProblemDetails with an errors dictionary. Prefer field-level
++  // validation messages so HTTP 400 does not collapse to a generic message.
++  const validationErrors = response?.errors ?? response?.Errors;
++  if (validationErrors && typeof validationErrors === 'object') {
++    const messages = Object.values(validationErrors).flat().filter(value => typeof value === 'string' && value.trim());
++    if (messages.length) return messages.join('\n');
++  }
++  const responseMessage = response?.message ?? response?.Message ?? response?.detail ?? response?.Detail;
++  if (typeof responseMessage === 'string' && responseMessage.trim() && !['One or more validation errors occurred.', 'AI_PROVIDER_AUTH_FAILED', 'AI_PROVIDER_UNAVAILABLE', 'AI_NOT_CONFIGURED'].includes(responseMessage)) {
++    return responseMessage;
++  }
+ 
+-  if (response?.message === 'AI_PROVIDER_AUTH_FAILED') {
++  if (response?.message === 'AI_PROVIDER_AUTH_FAILED' || response?.Message === 'AI_PROVIDER_AUTH_FAILED') {
+     return _aiProviderAuthMsg(locale);
+   }
+-  if (response?.message === 'AI_PROVIDER_UNAVAILABLE') {
++  if (response?.message === 'AI_PROVIDER_UNAVAILABLE' || response?.Message === 'AI_PROVIDER_UNAVAILABLE') {
+     return _aiProviderUnavailableMsg(locale);
+   }
+   // ── AI not configured ──────────────────────────────────────────────────────
+@@ -26,6 +38,7 @@
+   // response) should produce the AI configuration message.
+   if (
+     response?.message === 'AI_NOT_CONFIGURED' ||
++    response?.Message === 'AI_NOT_CONFIGURED' ||
+     response?.data    === 'AI_NOT_CONFIGURED' ||
+     (typeof response === 'string' && response === 'AI_NOT_CONFIGURED')
+   ) {
+--- a/back-end/SilentInterview.Application/Validators/Auth/RegisterRequestValidator.cs
++++ b/back-end/SilentInterview.Application/Validators/Auth/RegisterRequestValidator.cs
+@@ -10,7 +10,7 @@
+     {
+         RuleFor(x => x.FullName)
+             .NotEmpty()
+-            .MinimumLength(3)
++            .MinimumLength(2)
+             .MaximumLength(100);
+ 
+         RuleFor(x => x.Email)
+@@ -19,13 +19,17 @@
+ 
+         RuleFor(x => x.Password)
+             .NotEmpty()
++            .WithMessage("Password is required.")
+             .MinimumLength(8)
++            .WithMessage("Password must be at least 8 characters long.")
+             .Matches("[A-Z]")
+             .WithMessage("Password must contain an uppercase letter.")
+             .Matches("[a-z]")
+             .WithMessage("Password must contain a lowercase letter.")
+             .Matches("[0-9]")
+-            .WithMessage("Password must contain a number.");
++            .WithMessage("Password must contain a number.")
++            .Matches("[^A-Za-z0-9]")
++            .WithMessage("Password must contain a special character.");
+ 
+         RuleFor(x => x.ConfirmPassword)
+             .Equal(x => x.Password)
