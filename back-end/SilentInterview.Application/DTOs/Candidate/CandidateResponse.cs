@@ -1,0 +1,16 @@
+namespace SilentInterview.Application.DTOs.Candidate;
+
+public class CandidateResponse
+{
+    public Guid Id { get; set; }
+
+    public Guid UserId { get; set; }
+
+    public string ResumeUrl { get; set; } = string.Empty;
+
+    public string Skills { get; set; } = string.Empty;
+
+    public string Education { get; set; } = string.Empty;
+
+    public string Experience { get; set; } = string.Empty;
+}
